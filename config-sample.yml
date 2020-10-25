@@ -4,4 +4,4 @@ server_user_group: "ubuntu"
 ssh_key_file_path: "your_key_path_here" # Change here! example: "~/.ssh/id_rsa.pem"
 
 docker_compose_version: 1.27.4 # Change here! please check https://docs.docker.com/compose/release-notes/ 
-# node_friendlyName: "your_node_name_here" # Change here!
+node_friendlyName: "your_node_name_here" # Change here!
