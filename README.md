@@ -31,9 +31,13 @@ ansible-playbook -i hosts.yml playbook.yml
 - In guest machine, confirm working correctly.
 
 ```
+# if docker-compose not found
 symbol-bootstrap config -p testnet -a dual
 symbol-bootstrap compose
+
 symbol-bootstrap healthCheck
+curl http://localhost:3000/node/info
+curl http://localhost:3000/chain/info
 ```
  
 ## References 
