@@ -1,0 +1,110 @@
+- name:
+  hosts: all
+  become: yes
+  vars_files:
+    - config.yml
+  pre_tasks:
+    - name: "Run the equivalent of `apt-get update` as a separate step"
+      apt:
+        update_cache: yes
+    - name: "Upgrade all packages to the latest version"
+      apt:
+        name: "*"
+        state: latest
+  tasks:
+    - name: "output server information"
+      debug: 
+        msg: "Now accessing {{ server_user_name }}@{{ server_host }}."
+    - name: Save the current Ubuntu release version into a variable
+      shell: lsb_release -cs
+      register: ubuntu_version
+      
+    - name: Install the gpg key for nodejs LTS
+      apt_key:
+        url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+        state: present
+
+    - name: Install the nodejs LTS repos
+      apt_repository:
+        repo: "deb https://deb.nodesource.com/node_14.x {{ ansible_lsb.codename }} main"
+        state: present
+        update_cache: yes
+    
+    - name: "Install apt packages"
+      apt:
+        name: ['apt-transport-https', 'gcc', 'g++', 'make', 'build-essential', 'nodejs']
+        state: latest
+        
+    - name: "Install npm packages"
+      npm:
+        name: 'symbol-bootstrap'
+        global: yes
+        state: latest
+        
+    - name: Install packages needed for Docker
+      apt:
+        name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg-agent', 'software-properties-common']
+        state: present
+        force_apt_get: "yes"
+        
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present        
+  
+    - name: Add Docker Repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_version.stdout }} stable"
+        state: present
+        
+    - name: Install Docker
+      apt:
+        name: "docker-ce"
+        state: present
+        force_apt_get: "yes"
+        
+    - name: Create docker group
+      group:
+        name: "docker"
+        state: present
+  
+    - name: Adding ubuntu user to docker group  
+      user:
+        name: "ubuntu"
+        groups: "docker"
+        append: "yes"
+  
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+        dest: "/usr/local/bin/docker-compose"
+        mode: 0755
+   
+
+    - name: "copy service file"
+      template: 
+        src: custom-preset.yml.j2
+        dest: /home/ubuntu/custom-preset.yml
+        mode: "755"
+        
+    - name: "copy service file"
+      template: 
+        src: symbol-testnet.service.j2
+        dest: /etc/systemd/system/symbol-testnet.service
+        mode: "755"
+      register: service_conf
+    
+    - name: "reload systemd"
+      systemd:
+        daemon_reload: yes
+    
+    - name: "enable symbol testnet when restarted"
+      systemd:
+        name: symbol-testnet.service
+        enabled: yes
+    
+    - name: "start symbol testnet service"
+      systemd:
+        name: symbol-testnet
+        state: restarted
+      when: service_conf.changed
