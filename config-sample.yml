@@ -1,7 +1,17 @@
+# SSH settings
 server_host: "xxx.xxx.xxx.xxx" # Change here! IP address of your server here
-server_user_name: "ubuntu"
-server_user_group: "ubuntu"
+server_user_name: "xxxxx" # Change here! linux user to run test node
 ssh_key_file_path: "your_key_path_here" # Change here! example: "~/.ssh/id_rsa.pem"
 
+# Linux user settings to run testnode
+node_user_name: "test_user"  # Change here 
+node_user_group: "test_user"  # Change here 
+
+# test node settings
 docker_compose_version: 1.27.4 # Change here! please check https://docs.docker.com/compose/release-notes/ 
 node_friendlyName: "your_node_name_here" # Change here!
+signing_privateKey: "" # Change here! Your Private key or keep here empty to generate new privateKey
+vrf_signing_privateKey: "" # Change here if you have this or keep here empty to generate new privateKey.
+
+# swap file size
+swap_file_size_mb: '4096'

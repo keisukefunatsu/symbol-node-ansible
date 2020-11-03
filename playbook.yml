@@ -3,6 +3,8 @@
   become: yes
   vars_files:
     - config.yml
+  roles:
+    - geerlingguy.swap
   pre_tasks:
     - name: "Run the equivalent of `apt-get update` as a separate step"
       apt:
@@ -18,6 +20,21 @@
     - name: Save the current Ubuntu release version into a variable
       shell: lsb_release -cs
       register: ubuntu_version
+      
+    - name: Create group
+      group:
+        name: "{{ node_user_group }}"
+        system: true
+        state: present
+        
+    - name: Create user
+      user:
+        name: "{{ node_user_name }}"
+        groups: "{{ node_user_group }}"
+        shell: "/bin/bash"
+        state: present
+        createhome: true
+    
       
     - name: Install the gpg key for nodejs LTS
       apt_key:
@@ -37,13 +54,16 @@
         
     - name: "Install npm packages"
       npm:
-        name: 'symbol-bootstrap'
+        name: "{{ item }}"
         global: yes
         state: latest
+      with_items:
+        - 'symbol-bootstrap'
+        - 'symbol-cli'
         
     - name: Install packages needed for Docker
       apt:
-        name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg-agent', 'software-properties-common']
+        name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg-agent', 'software-properties-common', 'glances']
         state: present
         force_apt_get: "yes"
         
@@ -68,9 +88,9 @@
         name: "docker"
         state: present
   
-    - name: Adding ubuntu user to docker group  
+    - name: Add node user to docker group  
       user:
-        name: "ubuntu"
+        name: "{{ node_user_name }}"
         groups: "docker"
         append: "yes"
   
@@ -80,18 +100,45 @@
         dest: "/usr/local/bin/docker-compose"
         mode: 0755
    
-
-    - name: "copy service file"
+    - name: Allow all access to tcp port 22
+      ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+    - name: Allow all access to tcp port 3000
+      ufw:
+        rule: allow
+        port: "3000"
+        proto: tcp
+        
+    - name: Allow all access to tcp port 7900
+      ufw:
+        rule: allow
+        port: "7900"
+        proto: tcp
+        
+    - name: Allow all access to tcp port 7902
+      ufw:
+        rule: allow
+        port: "7902"
+        proto: tcp
+        
+    - name: Set firewall default policy
+      ufw: 
+        state: enabled 
+        policy: reject   
+        
+    - name: "copy symbol preset yml"
       template: 
         src: custom-preset.yml.j2
-        dest: /home/ubuntu/custom-preset.yml
+        dest: /home/{{ node_user_name }}/custom-preset.yml
         mode: "755"
         
-    - name: "copy service file"
+    - name: "copy systemd service file"
       template: 
         src: symbol-testnet.service.j2
         dest: /etc/systemd/system/symbol-testnet.service
-        mode: "755"
+        mode: "644"
       register: service_conf
     
     - name: "reload systemd"

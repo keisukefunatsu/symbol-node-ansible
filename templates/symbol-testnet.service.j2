@@ -2,9 +2,9 @@
 Description = symbol testnet
 
 [Service]
-User=ubuntu
-WorkingDirectory=/home/ubuntu
-ExecStart = /usr/bin/symbol-bootstrap start -p testnet -a dual -c /home/ubuntu/custom-preset.yml
+User={{ node_user_name }}
+WorkingDirectory=/home/{{ node_user_name }}
+ExecStart = /usr/bin/symbol-bootstrap start -p testnet -a dual -c /home/{{ node_user_name }}/custom-preset.yml
 Restart = always
 RestartSec=60
 Type = simple
