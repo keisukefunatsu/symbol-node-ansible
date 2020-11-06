@@ -53,6 +53,7 @@ curl http://localhost:3000/chain/info
 https://nemlog.nem.social/blog/50604
 https://qiita.com/curupo/items/12357755b9ac0a23ae22
 https://nemlog.nem.social/blog/49345
+https://gist.github.com/mattiaslundberg/ba214a35060d3c8603e9b1ec8627d349
 ```
 
 [preset example](https://github.com/nemtech/symbol-bootstrap/blob/main/docs/presetGuides.md)
