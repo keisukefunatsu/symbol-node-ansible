@@ -149,8 +149,8 @@
         
     - name: "copy systemd service file"
       template: 
-        src: symbol-testnet.service.j2
-        dest: /etc/systemd/system/symbol-testnet.service
+        src: symbol-node.service.j2
+        dest: /etc/systemd/system/symbol-node.service
         mode: "644"
       register: service_conf
     
@@ -158,16 +158,16 @@
       systemd:
         daemon_reload: yes
     
-    - name: "enable symbol testnet when restarted"
+    - name: "enable symbol node when restarted"
       systemd:
-        name: symbol-testnet.service
+        name: symbol-node.service
         enabled: yes
     
-    - name: "start symbol testnet service"
+    - name: "start symbol node service"
       systemd:
-        name: symbol-testnet
+        name: symbol-node
         state: restarted
-      when: service_conf.changed
+      # when: service_conf.changed
       
       
     - name: Set up nginx and https with let's encrypt

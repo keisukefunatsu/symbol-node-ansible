@@ -1,5 +1,5 @@
 # What
-Ansible playbook for setting up symbol test node
+Ansible playbook for setting up symbol node
 
 ## Prerequisite
 - ansible in host machine
@@ -37,7 +37,7 @@ ansible-playbook -i hosts.yml playbook.yml
 
 ```
 # if docker-compose not found
-symbol-bootstrap config -p testnet -a dual
+symbol-bootstrap config -a dual
 symbol-bootstrap compose
 
 symbol-bootstrap healthCheck

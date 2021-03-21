@@ -1,0 +1,13 @@
+[Unit]
+Description = symbol testnet
+
+[Service]
+User={{ node_user_name }}
+WorkingDirectory=/home/{{ node_user_name }}
+ExecStart = /usr/bin/symbol-bootstrap start -p {{ network_type | default('bootstrap') }} -a {{ node_type | default('light') }} -c /home/{{ node_user_name }}/custom-preset.yml --upgrade --password {{ encryption_password }}
+Restart = always
+RestartSec=60
+Type = simple
+
+[Install]
+WantedBy = multi-user.target

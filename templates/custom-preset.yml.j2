@@ -1,17 +1,19 @@
-nodes:
+nodes: 
     - friendlyName: "{{ node_friendlyName | default('default_node') }}"
+      host: "{{ domain_name | default('default_host') }}"    
     
-      {% if signing_privateKey is defined and signing_privateKey != '' %}
-      
-      signingPrivateKey: {{ signing_privateKey }}
-      
-      {% endif %}
-      
-      {% if vrf_signing_privateKey is defined and vrf_signing_privateKey != '' %}
-      
-      vrfPrivateKey: {{ vrf_signing_privateKey }}
-      
-      {% endif %}
+
+{% if signing_privateKey is defined and signing_privateKey != '' %}
+
+signingPrivateKey: {{ signing_privateKey }}
+
+{% endif %}
+
+{% if vrf_signing_privateKey is defined and vrf_signing_privateKey != '' %}
+
+vrfPrivateKey: {{ vrf_signing_privateKey }}
+
+{% endif %}
       
 throttlingBurst: 80
 throttlingRate: 40
