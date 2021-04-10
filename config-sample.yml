@@ -10,7 +10,7 @@ node_user_group: "test_user"
 # node settings
 docker_compose_version: 1.27.4 # Please check https://docs.docker.com/compose/release-notes/ 
 network_type: "mainnet"
-node_type: "peer"
+node_type: "dual"
 node_friendlyName: "your_node_name_here" # Node name
 signing_privateKey: "" # Your Private key or keep here empty to generate new privateKey
 vrf_signing_privateKey: "" # Keep here empty to generate new privateKey.
