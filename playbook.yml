@@ -124,6 +124,12 @@
         port: "3000"
         proto: tcp
         
+    - name: Allow all access to tcp port 3001
+      ufw:
+        rule: allow
+        port: "3001"
+        proto: tcp        
+        
     - name: Allow all access to tcp port 7900
       ufw:
         rule: allow
@@ -192,6 +198,10 @@
           template:
             src: nginx.conf.j2
             dest: /etc/nginx/nginx.conf
+        - name: Install nginx site for specified site
+          template:
+            src: nginx-le.j2
+            dest: /etc/nginx/sites-enabled/le            
         - name: Install nginx site for letsencrypt requests
           template:
             src: nginx-http.j2
@@ -208,10 +218,6 @@
           shell: openssl dhparam -out /etc/nginx/dhparams.pem 2048
           args:
             creates: /etc/nginx/dhparams.pem
-        - name: Install nginx site for specified site
-          template:
-            src: nginx-le.j2
-            dest: /etc/nginx/sites-enabled/le
         - name: Reload nginx to activate specified site
           service: name=nginx state=restarted
         - name: Add letsencrypt cronjob for cert renewal
